@@ -25,3 +25,20 @@ VALUES
     ('ava', NULL, 'Ava', 'Thompson', 385000.00, 44, '2026-03-05', '2026-10-24 16:20:00'),
     ('ethan', NULL, 'Ethan', 'Chen', 165000.00, 28, '2026-02-01', NULL),
     ('sophia', NULL, 'Sophia', 'Brooks', 295000.00, 38, '2026-03-05', '2026-10-25 08:30:00');
+
+-- Requirement 1: User Registration
+INSERT INTO Users (userid, password, firstname, lastname, salary, age, registerday, signintime)
+VALUES (?, ?, ?, ?, ?, ?, CURDATE(), NULL);
+
+-- Requirement 2: User Sign-in (Validation & Sign-in Timestamp)
+SELECT * FROM Users WHERE userid = ? AND password = ?;
+UPDATE Users SET signintime = NOW() WHERE userid = ?;
+
+-- Requirement 3: Search by First and/or Last Name
+SELECT * FROM Users WHERE firstname = ? AND lastname = ?;
+
+-- Requirement 4: Search by User ID
+SELECT * FROM Users WHERE userid = ?;
+
+-- Requirement 10: Users Registered Today
+SELECT * FROM Users WHERE registerday = CURDATE();

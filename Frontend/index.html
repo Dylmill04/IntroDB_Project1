@@ -8,33 +8,65 @@
 </head>
 <body>
   <main>
-      <label>Name:</label>
-      <input type="text" id="name-input">
-      <button id="add-name-btn">Add Name</button>
- 
-     <br><br><br>
-     <div> 
-        <input placeholder="search by name" id="search-input">
-        <button id="search-btn">Search</button>
-     </div>
-
-
-     <table id="table">
-         <thead>
-             <th>Id</th>
-             <th>Name</th>
-             <th>Date Added</th>
-             <th>Delete</th>
-             <th>Edit</th>  
-         </thead>
-         <tbody></tbody>
-     </table>
 
      <section hidden id="update-row">
          <label>Name:</label>
          <input type="text" id="update-name-input">
          <button id="update-row-btn" value="">Update</button>
     </section>
+
+    <section style="margin-bottom: 24px; border: 1px solid #ccc; padding: 12px;">
+        <h3>1. Register User</h3>
+        <input type="text" id="reg-userid" placeholder="User Id" />
+        <input type="password" id="reg-password" placeholder="Password" />
+        <input type="text" id="reg-firstname" placeholder="First Name" />
+        <input type="text" id="reg-lastname" placeholder="Last Name" />
+        <input type="number" id="reg-salary" placeholder="Salary" />
+        <input type="number" id="reg-age" placeholder="Age" />
+        <button id="btn-register">Register</button>
+    </section>
+
+    <section style="margin-bottom: 24px; border: 1px solid #ccc; padding: 12px;">
+        <h3>2. User Sign-In</h3>
+        <input type="text" id="login-userid" placeholder="userid" />
+        <input type="password" id="login-password" placeholder="Password" />
+        <button id="btn-signin">Sign In</button>
+        <span id="signin-status" style="margin-left: 10px; font-weight: bold;"></span>
+    </section>
+
+    <section style="margin-bottom: 24px; border: 1px solid #ccc; padding: 12px;">
+        <h3>3. Search by First / Last Name</h3>
+        <input type="text" id="search-firstname" placeholder="First Name" />
+        <input type="text" id="search-lastname" placeholder="Last Name" />
+        <button id="btn-search-name">Search by Name</button>
+    </section>
+
+    <section style="margin-bottom: 24px; border: 1px solid #ccc; padding: 12px;">
+        <h3>4. Search by User ID</h3>
+        <input type="text" id="search-userid" placeholder="Enter userid" />
+        <button id="btn-search-userid">Search by ID</button>
+    </section>
+
+    <section style="margin-bottom: 24px; border: 1px solid #ccc; padding: 12px;">
+        <h3>10. Users Registered Today</h3>
+        <button id="btn-registered-today">Get Users Registered Today</button>
+    </section>
+
+    <table id="user-table" border="1" style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+        <thead>
+            <tr>
+                <th>userid</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Salary</th>
+                <th>Age</th>
+                <th>Register Day</th>
+                <th>Sign-in Time</th>
+            </tr>
+        </thead>
+        <tbody id="user-table-body"></tbody>
+        </table>
+
 </main>
 <script src="index.js"></script>
 </body>
