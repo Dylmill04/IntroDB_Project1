@@ -111,6 +111,113 @@ class DbService{
         }
    }
 
+   async registerUser(userid, password, firstname, lastname, salary, age) {
+    try {
+        const response = await new Promise((resolve, reject) => {
+            // Exactly 6 columns with '?', plus CURDATE() and NULL = 8 columns total
+            const query = `
+                INSERT INTO Users (userid, password, firstname, lastname, salary, age, registerday, signintime)
+                VALUES (?, ?, ?, ?, ?, ?, CURDATE(), NULL);
+            `;
+            // Exactly 6 variables passed into the array
+            connection.query(query, [userid, password, firstname, lastname, salary, age], (err, result) => {
+                if (err) reject(new Error(err.message));
+                resolve(result);
+            });
+        });
+        return response;
+    } catch (error) {
+        console.error("registerUser DB Error:", error);
+        return false;
+    }
+}
+
+   async signInUser(userid, password) {
+      try {
+         const response = await new Promise((resolve, reject) => {
+            const query = "SELECT * FROM Users WHERE userid = ? AND password = ?;";
+            connection.query(query, [userid, password], (err, results) => {
+               if (err) return reject(new Error(err.message));
+               
+               if (results && results.length > 0) {
+                  const updateQuery = "UPDATE Users SET signintime = NOW() WHERE userid = ?;";
+                  connection.query(updateQuery, [userid], (updateErr) => {
+                     if (updateErr) return reject(new Error(updateErr.message));
+                     resolve(results[0]);
+                  });
+               } else {
+                  resolve(null);
+               }
+            });
+         });
+         return response;
+      } catch (error) {
+         console.error("signInUser Error:", error);
+         return null;
+      }
+   }
+
+   async searchByName(firstname, lastname) {
+      try{
+            const response = await new Promise((resolve, reject) =>
+            {
+               let query = "SELECT * FROM Users WHERE 1=1";
+               const params = [];
+
+               if (firstname && firstname.trim() !== "") {
+                  query += " AND firstname = ?";
+                  params.push(firstname.trim());
+               }
+
+               if (lastname && lastname.trim() !== "") {
+                  query += " AND lastname = ?";
+                  params.push(lastname.trim());
+               }
+
+               connection.query(query, params, (err, result) => {
+                  if (err) reject(new Error(err.message));
+                  resolve(result);
+               });
+            });
+            return response;
+         } catch (error) {
+            console.log(error);
+            return [];
+         }
+   }
+
+   async searchByUserId(userid) {
+      try {
+            const response = await new Promise((resolve, reject) => {
+               const query = "SELECT * FROM Users WHERE userid = ?;";
+
+               connection.query(query, [userid], (err, result) => {
+                  if (err) return reject(new Error(err.message));
+                  resolve(result);
+               });
+            });
+            return response || [];
+      } catch (error) {
+         console.error("searchByUserId error:", error);
+         return [];
+      }
+   }
+   
+   async searchRegisteredToday() {
+      try{
+            const response = await new Promise((resolve, reject) =>
+            {
+               const query = "SELECT * FROM Users WHERE registerday = CURDATE();";
+               connection.query(query, (err, result) => {
+                  if(err) reject(new Error(err.message));
+                  resolve(result);
+               });
+            });
+            return response;
+         } catch (error) {
+            console.log(error);
+         }
+   }
 
    async insertNewName(name){
          try{
@@ -137,28 +244,6 @@ class DbService{
 
 
 
-
-   async searchByName(name){
-        try{
-             const dateAdded = new Date();
-             // use await to call an asynchronous function
-             const response = await new Promise((resolve, reject) => 
-                  {
-                     const query = "SELECT * FROM names where name = ?;";
-                     connection.query(query, [name], (err, results) => {
-                         if(err) reject(new Error(err.message));
-                         else resolve(results);
-                     });
-                  }
-             );
-
-             // console.log(response);  // for debugging to see the result of select
-             return response;
-
-         }  catch(error){
-            console.log(error);
-         }
-   }
 
    async deleteRowById(id){
          try{

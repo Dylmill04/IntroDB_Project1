@@ -71,6 +71,110 @@ document.addEventListener('DOMContentLoaded', function() {
     .then(data => loadHTMLTable(data['data']));
 });
 
+//////////////////
+// Render users into the table
+function renderTable(users) {
+    const tbody = document.querySelector('#user-table-body');
+    tbody.innerHTML = "";
+
+    if (!users || users.length === 0) {
+        tbody.innerHTML = "<tr><td colspan='7' style='text-align:center;'>No matching users found</td></tr>";
+        return;
+    }
+
+    users.forEach(user => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${user.userid}</td>
+            <td>${user.firstname}</td>
+            <td>${user.lastname}</td>
+            <td>${user.salary ?? ''}</td>
+            <td>${user.age ?? ''}</td>
+            <td>${user.registerday ? user.registerday.substring(0, 10) : ''}</td>
+            <td>${user.signintime ? new Date(user.signintime).toLocaleString() : 'Never'}</td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+// 1. Register Button
+document.querySelector('#btn-register').addEventListener('click', () => {
+    const user = {
+        userid: document.querySelector('#reg-userid').value,
+        password: document.querySelector('#reg-password').value,
+        firstname: document.querySelector('#reg-firstname').value,
+        lastname: document.querySelector('#reg-lastname').value,
+        salary: parseFloat(document.querySelector('#reg-salary').value) || 0,
+        age: parseInt(document.querySelector('#reg-age').value, 10) || 0
+    };
+
+    fetch('http://localhost:5050/register', {
+        headers: { 'Content-type': 'application/json' },
+        method: 'POST',
+        body: JSON.stringify(user)
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            alert('User successfully registered!');
+        } else {
+            alert('Registration failed (userid might already exist).');
+        }
+    });
+});
+
+// 2. Sign-In Button
+document.querySelector('#btn-signin').addEventListener('click', () => {
+    const credentials = {
+        userid: document.querySelector('#login-userid').value,
+        password: document.querySelector('#login-password').value
+    };
+
+    fetch('http://localhost:5050/signin', {
+        headers: { 'Content-type': 'application/json' },
+        method: 'POST',
+        body: JSON.stringify(credentials)
+    })
+    .then(res => res.json())
+    .then(data => {
+        const statusEl = document.querySelector('#signin-status');
+        if (data.success) {
+            statusEl.style.color = "green";
+            statusEl.textContent = `Signed in successfully as ${data.user.userid}!`;
+        } else {
+            statusEl.style.color = "red";
+            statusEl.textContent = data.message || "Sign in failed.";
+        }
+    });
+});
+
+// 3. Search by First / Last Name
+document.querySelector('#btn-search-name').addEventListener('click', () => {
+    const first = document.querySelector('#search-firstname').value;
+    const last = document.querySelector('#search-lastname').value;
+
+    fetch(`http://localhost:5050/searchByName?firstname=${encodeURIComponent(first)}&lastname=${encodeURIComponent(last)}`)
+    .then(res => res.json())
+    .then(json => renderTable(json.data));
+});
+
+// 4. Search by User ID
+document.querySelector('#btn-search-userid').addEventListener('click', () => {
+    const userid = document.querySelector('#search-userid').value;
+
+    fetch(`http://localhost:5050/searchByUserId/${encodeURIComponent(userid)}`)
+    .then(res => res.json())
+    .then(json => renderTable(json.data));
+});
+
+// 10. Registered Today
+document.querySelector('#btn-registered-today').addEventListener('click', () => {
+    fetch('http://localhost:5050/registeredToday')
+    .then(res => res.json())
+    .then(json => renderTable(json.data));
+});
+//////////////////
+
 
 // when the addBtn is clicked
 const addBtn = document.querySelector('#add-name-btn');
@@ -250,6 +354,8 @@ function loadHTMLTable(data){
         table.innerHTML = "<tr><td class='no-data' colspan='5'>No Data</td></tr>";
         return;
     }
+
+
   
     /*
     In the following JavaScript code, the forEach method is used to iterate over the 

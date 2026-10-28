@@ -32,7 +32,67 @@ app.post('/insert', (request, response) => {
    .catch(err => console.log(err));
 });
 
+//1. user registration
+app.post('/register', (request, response) => {
+    const { userid, password, firstname, lastname, salary, age }
+    = request.body
+    const db = dbService.getDbServiceInstance();
+    const result = db.registerUser(userid, password, firstname, lastname, salary, age);
 
+    result
+    .then(data => response.json({success: !!data}))
+    .catch(err => response.status(500).json({ success: false, error: err}));
+
+});
+
+//2. user sign in
+app.post('/signin', (request, response) => {
+    const { userid, password } = request.body;
+    const db = dbService.getDbServiceInstance();
+    const result = db.signInUser(userid, password);
+
+    result
+    .then(user => {
+        if (user) {
+            response.json({ success: true, user });
+        } else {
+            response.json({ success: false, message: "Invalid"});
+        }
+    })
+    .catch(err => response.status(500).json({success: false, error: err}));
+});
+
+//3. search by first and/or last name
+app.get('/searchByName', (request, response) => {
+    const {firstname, lastname } = request.query;
+    const db = dbService.getDbServiceInstance();
+    const result = db.searchByName(firstname, lastname);
+
+    result
+     .then(data => response.json({ data }))
+     .catch(err => response.status(500).json({ error: err}));
+});
+
+//4. search by user id
+app.get('/searchByUserId/:userid', (request, response) => {
+    const { userid } = request.params;
+    const db = dbService.getDbServiceInstance();
+    const result = db.searchByUserId(userid);
+
+    result
+        .then(data => response.json({ data }))
+        .catch(err => response.status(500).json({ error: err }));
+});
+
+// 10. Search Users Registered Today
+app.get('/registeredToday', (request, response) => {
+    const db = dbService.getDbServiceInstance();
+    const result = db.searchRegisteredToday();
+
+    result
+        .then(data => response.json({ data }))
+        .catch(err => response.status(500).json({ error: err }));
+});
 
 
 // read 
