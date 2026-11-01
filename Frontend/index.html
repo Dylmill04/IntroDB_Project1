@@ -1,3 +1,9 @@
+/*
+    File description:
+    
+*/
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -46,6 +52,40 @@
         <input type="text" id="search-userid" placeholder="Enter userid" />
         <button id="btn-search-userid">Search by ID</button>
     </section>
+
+    
+    <section style="margin-bottom: 24px; border: 1px solid #ccc; padding: 12px;">
+        <h3>5. Search by Salary Range</h3>
+        <input type="number" id="salary-min" placeholder="Minimum Salary" step="0.01" />
+        <input type="number" id="salary-max" placeholder="Maximum Salary" step="0.01" />
+        <button id="btn-search-salary">Search by Salary</button>
+    </section>
+
+    <section style="margin-bottom: 24px; border: 1px solid #ccc; padding: 12px;">
+        <h3>6. Search by Age Range</h3>
+        <input type="number" id="age-min" placeholder="Minimum Age" min="0" step="1" />
+        <input type="number" id="age-max" placeholder="Maximum Age" min="0" step="1" />
+        <button id="btn-search-age">Search by Age</button>
+    </section>
+
+    <section style="margin-bottom: 24px; border: 1px solid #ccc; padding: 12px;">
+        <h3>7. Users Registered After a Specified Person</h3>
+        <input type="text" id="after-firstname" placeholder="Person's First Name" />
+        <input type="text" id="after-lastname" placeholder="Person's Last Name" />
+        <button id="btn-registered-after">Search Users Registered After</button>
+    </section>
+
+    <section style="margin-bottom: 24px; border: 1px solid #ccc; padding: 12px;">
+        <h3>8. Users Who Never Signed In</h3>
+        <button id="btn-never-signed-in">Search Users Who Never Signed In</button>
+    </section>
+
+    <section style="margin-bottom: 24px; border: 1px solid #ccc; padding: 12px;">
+        <h3>9. Users Registered on the Same Day as a Specified Person</h3>
+        <input type="text" id="same-day-firstname" placeholder="Person's First Name" />
+        <input type="text" id="same-day-lastname" placeholder="Person's Last Name" />
+        <button id="btn-same-day">Search Same Registration Day</button>
+    </section> 
 
     <section style="margin-bottom: 24px; border: 1px solid #ccc; padding: 12px;">
         <h3>10. Users Registered Today</h3>

@@ -1,77 +1,14 @@
-
-// This is the frontEnd that modifies the HTML page directly
-// event-based programming,such as document load, click a button
-
 /*
-What is a Promise in Javascript? 
+    File description:  
 
-A Promise can be in one of three states:
-
-    - Pending: The initial state; the promise is neither fulfilled nor rejected.
-
-    - Fulfilled: The operation completed successfully, and the promise has a 
-      resulting value.
-
-    - Rejected: The operation failed, and the promise has a reason for the failure.
-
-Promises have two main methods: then and catch.
-
-    - The then method is used to handle the successful fulfillment of a promise. 
-    It takes a callback function that will be called when the promise is resolved, 
-    and it receives the resulting value.
-
-    - The catch method is used to handle the rejection of a promise. It takes a 
-    callback function that will be called when the promise is rejected, and it 
-    receives the reason for the rejection.
-
-What is a promise chain? 
-    The Promise chain starts with some asyncOperation1(), which returns a promise, 
-    and each subsequent ``then`` is used to handle the result of the previous Promise.
-
-    The catch is used at the end to catch any errors that might occur at any point 
-    in the chain.
-
-    Each then returns a new Promise, allowing you to chain additional ``then`` calls to 
-    handle subsequent results.
-
-What is an arrow function?
-
-    An arrow function in JavaScript is a concise way to write anonymous function 
-    expressions.
-
-    Traditional function syntax: 
-        const add = function(x, y) {
-           return x + y;
-        };
-
-    Arrow function syntax:
-        const add = (x, y) => x + y;
-    
-    
-Arrow functions have a few notable features:
-
-    - Shorter Syntax: Arrow functions eliminate the need for the function keyword, 
-      curly braces {}, and the return keyword in certain cases, making the syntax 
-      more concise.
-
-    - Implicit Return: If the arrow function consists of a single expression, it is 
-      implicitly returned without needing the return keyword.
-
-    - Lexical this: Arrow functions do not have their own this context; instead, they 
-      inherit this from the surrounding code. This can be beneficial in certain situations,
-      especially when dealing with callbacks and event handlers.
 */
 
-
-// fetch call is to call the backend
 document.addEventListener('DOMContentLoaded', function() {
-    // one can point your browser to http://localhost:5050/getAll to check what it returns first.
-    fetch('http://localhost:5050/getAll')     
-    .then(response => response.json())
-    .then(data => loadHTMLTable(data['data']));
+    fetch('http://localhost:5050/getAll')
+        .then(response => response.json())
+        .then(data => renderTable(data.data));
 });
 
-//////////////////
 // Render users into the table
 function renderTable(users) {
     const tbody = document.querySelector('#user-table-body');
@@ -167,13 +104,185 @@ document.querySelector('#btn-search-userid').addEventListener('click', () => {
     .then(json => renderTable(json.data));
 });
 
+ // 5. Search by Salary Range
+document.querySelector('#btn-search-salary').addEventListener('click', () => {
+    const minInput = document.querySelector('#salary-min').value;
+    const maxInput = document.querySelector('#salary-max').value;
+
+    if (minInput === '' || maxInput === '') {
+        alert('Please enter both a minimum and maximum salary.');
+        return;
+    }
+
+    const minSalary = Number(minInput);
+    const maxSalary = Number(maxInput);
+
+    if (
+        !Number.isFinite(minSalary) ||
+        !Number.isFinite(maxSalary) ||
+        minSalary < 0 ||
+        maxSalary < minSalary
+    ) {
+        alert('Please enter a valid salary range.');
+        return;
+    }
+
+    const params = new URLSearchParams({
+        min: minSalary,
+        max: maxSalary
+    });
+
+    fetch(`http://localhost:5050/searchBySalary?${params}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Salary search failed.');
+            }
+            return response.json();
+        })
+        .then(json => {
+            renderTable(json.data);
+        })
+        .catch(error => {
+            console.error('Error searching by salary:', error);
+            alert('Could not search by salary. Please try again.');
+        });
+});
+
+
+ // 6. Search by Age Range
+document.querySelector('#btn-search-age').addEventListener('click', () => {
+    const minInput = document.querySelector('#age-min').value;
+    const maxInput = document.querySelector('#age-max').value;
+
+    if (minInput === '' || maxInput === '') {
+        alert('Please enter both a minimum and maximum age.');
+        return;
+    }
+
+    const minAge = Number(minInput);
+    const maxAge = Number(maxInput);
+
+    if (
+        !Number.isInteger(minAge) ||
+        !Number.isInteger(maxAge) ||
+        minAge < 0 ||
+        maxAge < minAge
+    ) {
+        alert('Please enter a valid age range using whole numbers.');
+        return;
+    }
+
+    const params = new URLSearchParams({
+        min: minAge,
+        max: maxAge
+    });
+
+    fetch(`http://localhost:5050/searchByAge?${params}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Age search failed.');
+            }
+            return response.json();
+        })
+        .then(json => renderTable(json.data))
+        .catch(error => {
+            console.error('Error searching by age:', error);
+            alert('Could not search by age. Please try again.');
+        });
+});
+
+
+ // 7. Search Users Registered After a Specified Person
+document.querySelector('#btn-registered-after').addEventListener('click', () => {
+    const firstname = document.querySelector('#after-firstname').value.trim();
+    const lastname = document.querySelector('#after-lastname').value.trim();
+
+    if (!firstname || !lastname) {
+        alert("Please enter the person's first and last name.");
+        return;
+    }
+
+    const params = new URLSearchParams({ firstname, lastname });
+
+    fetch(`http://localhost:5050/registeredAfterPerson?${params}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Registration-date search failed.');
+            }
+            return response.json();
+        })
+        .then(json => {
+            if (json.success === false) {
+                alert(json.message || 'Could not find the specified person.');
+                return;
+            }
+
+            renderTable(json.data);
+        })
+        .catch(error => {
+            console.error('Error searching by registration date:', error);
+            alert('Could not complete the search. Please try again.');
+        });
+});
+
+
+ // 8. Search Users Who Never Signed In
+document.querySelector('#btn-never-signed-in').addEventListener('click', () => {
+    fetch('http://localhost:5050/neverSignedIn')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Never-signed-in search failed.');
+            }
+            return response.json();
+        })
+        .then(json => renderTable(json.data))
+        .catch(error => {
+            console.error('Error searching for users who never signed in:', error);
+            alert('Could not retrieve users who have never signed in.');
+        });
+});
+
+
+ // 9. Search Users Registered on the Same Day as a Specified Person
+document.querySelector('#btn-same-day').addEventListener('click', () => {
+    const firstname = document.querySelector('#same-day-firstname').value.trim();
+    const lastname = document.querySelector('#same-day-lastname').value.trim();
+
+    if (!firstname || !lastname) {
+        alert("Please enter the person's first and last name.");
+        return;
+    }
+
+    const params = new URLSearchParams({ firstname, lastname });
+
+    fetch(`http://localhost:5050/registeredSameDay?${params}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Same-day search failed.');
+            }
+            return response.json();
+        })
+        .then(json => {
+            if (json.success === false) {
+                alert(json.message || 'Could not find the specified person.');
+                return;
+            }
+
+            renderTable(json.data);
+        })
+        .catch(error => {
+            console.error('Error searching for users registered on the same day:', error);
+            alert('Could not complete the search. Please try again.');
+        });
+});
+
+
 // 10. Registered Today
 document.querySelector('#btn-registered-today').addEventListener('click', () => {
     fetch('http://localhost:5050/registeredToday')
     .then(res => res.json())
     .then(json => renderTable(json.data));
 });
-//////////////////
 
 
 // when the addBtn is clicked
@@ -343,56 +452,4 @@ function insertRowIntoTable(data){
         const newrow = table.insertRow();
         newrow.innerHTML = tableHtml;
     }
-}
-
-function loadHTMLTable(data){
-    debug("index.js: loadHTMLTable called.");
-
-    const table = document.querySelector('table tbody'); 
-    
-    if(data.length === 0){
-        table.innerHTML = "<tr><td class='no-data' colspan='5'>No Data</td></tr>";
-        return;
-    }
-
-
-  
-    /*
-    In the following JavaScript code, the forEach method is used to iterate over the 
-    elements of the data array. The forEach method is a higher-order function 
-    that takes a callback function as its argument. The callback function is 
-    executed once for each element in the array.
-    
-    In this case, the callback function takes a single argument, which is an object 
-    destructuring pattern:
-
-
-    function ({id, name, date_added}) {
-        // ... code inside the callback function
-    }
-
-    This pattern is used to extract the id, name, and date_added properties from each 
-    element of the data array. The callback function is then executed for each element
-    in the array, and within the function, you can access these properties directly 
-    as variables (id, name, and date_added).
-
-    
-    In summary, the forEach method is a convenient way to iterate over each element in 
-    an array and perform some operation or execute a function for each element. 
-    The provided callback function is what gets executed for each element in the 
-    data array.
-    */
-
-    let tableHtml = "";
-    data.forEach(function ({id, name, date_added}){
-         tableHtml += "<tr>";
-         tableHtml +=`<td>${id}</td>`;
-         tableHtml +=`<td>${name}</td>`;
-         tableHtml +=`<td>${new Date(date_added).toLocaleString()}</td>`;
-         tableHtml +=`<td><button class="delete-row-btn" data-id=${id}>Delete</td>`;
-         tableHtml += `<td><button class="edit-row-btn" data-id=${id}>Edit</td>`;
-         tableHtml += "</tr>";
-    });
-
-    table.innerHTML = tableHtml;
 }
