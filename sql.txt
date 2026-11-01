@@ -12,6 +12,7 @@ CREATE TABLE Users (
 
 
 
+
 INSERT INTO Users
 (userid, password, firstname, lastname, salary, age, registerday, signintime)
 VALUES
@@ -25,6 +26,9 @@ VALUES
     ('ava', NULL, 'Ava', 'Thompson', 385000.00, 44, '2026-03-05', '2026-10-24 16:20:00'),
     ('ethan', NULL, 'Ethan', 'Chen', 165000.00, 28, '2026-02-01', NULL),
     ('sophia', NULL, 'Sophia', 'Brooks', 295000.00, 38, '2026-03-05', '2026-10-25 08:30:00');
+
+
+
 
 -- Requirement 1: User Registration
 INSERT INTO Users (userid, password, firstname, lastname, salary, age, registerday, signintime)
@@ -42,3 +46,33 @@ SELECT * FROM Users WHERE userid = ?;
 
 -- Requirement 10: Users Registered Today
 SELECT * FROM Users WHERE registerday = CURDATE();
+
+
+
+-- Requirement 5: Salary Range Query
+SELECT * FROM Users
+WHERE salary BETWEEN ? AND ?;
+
+-- Requirement 6: Age Range
+SELECT * FROM Users
+WHERE age BETWEEN ? AND ?;
+
+-- Requirement 7: Registered After 'User'
+SELECT * FROM Users
+WHERE registerday > (
+    SELECT registerday
+    FROM Users
+    WHERE firstname = ? AND lastname = ?
+);
+
+-- Requirement 8: Users Who Never Signed In
+SELECT * FROM Users
+WHERE signintime IS NULL;
+
+-- Requirement 9: Same Day Registration as 'User'
+SELECT * FROM Users
+WHERE registerday = (
+    SELECT registerday
+    FROM Users
+    WHERE firstname = ? AND lastname = ?
+);

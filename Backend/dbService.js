@@ -242,9 +242,6 @@ class DbService{
          }
    }
 
-
-
-
    async deleteRowById(id){
          try{
               id = parseInt(id, 10);
@@ -291,6 +288,128 @@ class DbService{
          console.log(error);
       }
   }
+
+     // 5. Search by salary range
+   async searchBySalaryRange(minSalary, maxSalary) {
+        try {
+            const response = await new Promise((resolve, reject) => {
+                const query = `
+                    SELECT * FROM Users
+                    WHERE salary BETWEEN ? AND ?;
+                `;
+
+                connection.query(query, [minSalary, maxSalary], (err, results) => {
+                    if (err) return reject(new Error(err.message));
+                    resolve(results);
+                });
+            });
+
+            return response;
+        } catch (error) {
+            console.error("searchBySalaryRange error:", error);
+            return [];
+        }
+   }
+
+
+   // 6. Search by age range
+   async searchByAgeRange(minAge, maxAge) {
+        try {
+            const response = await new Promise((resolve, reject) => {
+                const query = `
+                    SELECT * FROM Users
+                    WHERE age BETWEEN ? AND ?;
+                `;
+
+                connection.query(query, [minAge, maxAge], (err, results) => {
+                    if (err) return reject(new Error(err.message));
+                    resolve(results);
+                });
+            });
+
+            return response;
+        } catch (error) {
+            console.error("searchByAgeRange error:", error);
+            return [];
+        }
+   }
+
+
+   // 7. Search users registered after a specified person
+   async searchRegisteredAfter(firstname, lastname) {
+        try {
+            const response = await new Promise((resolve, reject) => {
+                const query = `
+                    SELECT * FROM Users
+                    WHERE registerday > (
+                        SELECT registerday
+                        FROM Users
+                        WHERE firstname = ? AND lastname = ?
+                    );
+                `;
+
+                connection.query(query, [firstname, lastname], (err, results) => {
+                    if (err) return reject(new Error(err.message));
+                    resolve(results);
+                });
+            });
+
+            return response;
+        } catch (error) {
+            console.error("searchRegisteredAfter error:", error);
+            return [];
+        }
+   }
+
+
+   // 8. Search users who never signed in
+   async searchNeverSignedIn() {
+        try {
+            const response = await new Promise((resolve, reject) => {
+                const query = `
+                    SELECT * FROM Users
+                    WHERE signintime IS NULL;
+                `;
+
+                connection.query(query, (err, results) => {
+                    if (err) return reject(new Error(err.message));
+                    resolve(results);
+                });
+            });
+
+            return response;
+        } catch (error) {
+            console.error("searchNeverSignedIn error:", error);
+            return [];
+        }
+   }
+
+
+   // 9. Search users registered on the same day as a specified person
+   async searchSameRegistrationDay(firstname, lastname) {
+        try {
+            const response = await new Promise((resolve, reject) => {
+                const query = `
+                    SELECT * FROM Users
+                    WHERE registerday = (
+                        SELECT registerday
+                        FROM Users
+                        WHERE firstname = ? AND lastname = ?
+                    );
+                `;
+
+                connection.query(query, [firstname, lastname], (err, results) => {
+                    if (err) return reject(new Error(err.message));
+                    resolve(results);
+                });
+            });
+
+            return response;
+        } catch (error) {
+            console.error("searchSameRegistrationDay error:", error);
+            return [];
+        }
+   }
 }
 
 module.exports = DbService;

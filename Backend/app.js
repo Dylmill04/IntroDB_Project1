@@ -1,3 +1,4 @@
+
 // Backend: application services, accessible by URIs
 
 
@@ -82,6 +83,69 @@ app.get('/searchByUserId/:userid', (request, response) => {
     result
         .then(data => response.json({ data }))
         .catch(err => response.status(500).json({ error: err }));
+});
+
+
+// 5. Search for users by salary range
+app.get('/searchBySalary', (request, response) => {
+    const { min, max } = request.query;
+
+    const db = dbService.getDbServiceInstance();
+    const result = db.searchBySalaryRange(min, max);
+
+    result
+        .then(data => response.json({ data }))
+        .catch(err => response.status(500).json({ error: err.message }));
+});
+
+
+// 6. Search for users by age range
+app.get('/searchByAge', (request, response) => {
+    const { min, max } = request.query;
+
+    const db = dbService.getDbServiceInstance();
+    const result = db.searchByAgeRange(min, max);
+
+    result
+        .then(data => response.json({ data }))
+        .catch(err => response.status(500).json({ error: err.message }));
+});
+
+
+// 7. Search for users registered after a specific person
+app.get('/registeredAfterPerson', (request, response) => {
+    const { firstname, lastname } = request.query;
+
+    const db = dbService.getDbServiceInstance();
+    const result = db.searchRegisteredAfter(firstname, lastname);
+
+    result
+        .then(data => response.json({ data }))
+        .catch(err => response.status(500).json({ error: err.message }));
+});
+
+
+// 8. Search for users who never signed in
+app.get('/neverSignedIn', (request, response) => {
+    const db = dbService.getDbServiceInstance();
+    const result = db.searchNeverSignedIn();
+
+    result
+        .then(data => response.json({ data }))
+        .catch(err => response.status(500).json({ error: err.message }));
+});
+
+
+// 9. Search for users that registered on the same day as another person
+app.get('/registeredSameDay', (request, response) => {
+    const { firstname, lastname } = request.query;
+
+    const db = dbService.getDbServiceInstance();
+    const result = db.searchSameRegistrationDay(firstname, lastname);
+
+    result
+        .then(data => response.json({ data }))
+        .catch(err => response.status(500).json({ error: err.message }));
 });
 
 // 10. Search Users Registered Today
