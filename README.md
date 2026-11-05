@@ -1,80 +1,143 @@
-**Project description**
-
-In this project, you will create a user table and then use it to register a new user and then allows the user to sign into a website. This project will take 4 weeks. 
-
-Watch [video 1](https://www.youtube.com/watch?v=vrj9AohVhPA) to get a good understanding of an example project, and then watch  [video 2](https://www.youtube.com/watch?v=XBJRBB14ijY) and [video 3](https://www.youtube.com/watch?v=MaBphsJLrGY) for an explanation of the source code for the example project. 
-
-Feel feee to reuse any code from the sample project,  implement the following interface and functoinalty: 
-1. User registration.
-2. User sign-in, make sure your impelementation is not subject to [SQL injection attack](https://portswigger.net/support/using-sql-injection-to-bypass-authentication). 
-3. search users by first and/or last name.
-4. search users by userid;
-5. search all users whose salary is between X and Y. 
-6. Search all users whose ages are between X and Y.
-7. Search users who registered after john registered, where ```john``` is the userid.
-8. search users who never signed in.
-9. Search users who registered on the same day that john registered. 
-10. Return the users who registered today;
-
-In addition, you will demonstate your github skills in collaboration with your partner: 
-    - Repositories (local vs remote)
-    - Clone / Pull / Fetch
-    - Add / Commit / Push
-
-Show and explain the results, including github operations, in a video. Submit all SQL statements in a file called sql.txt. 
-
-Consider to create the user table using the following CREATE TABLE stmt (feel free to revise it): 
+Web Application
 
 
-```SQL
-CREATE TABLE Users(
-   username VARCHAR(50) primary key,
-   password VARCHAR(50), // maybe encrypted or a hash?
-   firstname VARCHAR(50),
-   lastname VARCHAR(50),
-   salary FLOAT,
-   age INTEGER,
-   registerday DATE,
-   signintime DATETIME
-) 
-```
+1. Requirements
+
+Ensure the following are installed on your machine:
+
+XAMPP with Apache and MySQL enabled
+
+Node.js & npm
+
+Web browser 
 
 
-Note: the grading will be based on the correct result of the query, the design of the interface and your explnation skill of the results. 
-doenv is a file that you need to customize and rename it to .env to work.
+2. Project Directory Structure
 
-**How to run the sample code**
-1. We will use the Apache web server. Create the first webpage index.html under ```C:\xampp\htdocs>``` (or similar directory where you installed XAMPP) and point your browser to [http://localhost/index.html](http://localhost/index.html). You should see your first webpage. The purpose of this step is to confirm that the Web server is running, and understand the ROOT URL points to the path location: C:\xampp\htdocs or similar directory in your file system. 
-2. At ```C:\xampp\htdocs```, run ```git clone https://github.com/shiyonglu/database_javascript.git``` to copy the whole sample code to the current directory.
-3. Now you can access the Frontend via [http://localhost/database_javascript/project1/Frontend/index.html](http://localhost/database_javascript/project1/Frontend/index.html).
-4. You can configure parameters directly in dbServices.js and app.js. Here, we achieve this by configuring parameters using the .env file. Configure the MySql database according to ```C:\xampp\htdocs\database_javascript\project1\Backend\dotenv```, that is, to create a database called ```web_app``` and a user ```john``` with password ```1234``` via the Admin interface ```http://localhost/phpmyadmin/```. The user ```john``` will be granted with all priviledges for the ```web_app``` database. To get started, you might also change the dotenv file as follows to only use the root user:
-```javascript
+C:\xampp\htdocs\IntroDB_Project1\
+Backend\
+	.env                 
+	app.js               
+	dbService.js         
+	package.json         
+	package-lock.json
+    
+Frontend\
+	index.html          
+	index.js             
+	stylesheet.css      
+	sql.txt                  
+	README.md
+
+3. Database Setup (MySQL & phpMyAdmin)
+
+Launch the XAMPP Control Panel.
+
+Start both the Apache and MySQL.
+
+Open your browser and navigate to:
+
+http://localhost/phpmyadmin/
+
+
+Create a new database named:
+
+web_app
+
+
+Select the web_app database, open the SQL tab, and execute the following script to create the Users table:
+
+CREATE TABLE Users (
+    userid VARCHAR(50) PRIMARY KEY,
+    password VARCHAR(255) NULL,
+    firstname VARCHAR(50) NOT NULL,
+    lastname VARCHAR(50) NOT NULL,
+    salary DECIMAL(10, 2),
+    age INTEGER,
+    registerday DATE NOT NULL,
+    signintime DATETIME NULL
+);
+
+
+In the same SQL tab, populate the table with initial test records:
+
+INSERT INTO Users (userid, password, firstname, lastname, salary, age, registerday, signintime) VALUES
+    ('john', NULL, 'John', 'Carter', 185000.00, 32, '2026-01-10', '2026-10-20 09:15:00'),
+    ('sarah', NULL, 'Sarah', 'Chen', 240000.00, 29, '2026-01-10', NULL),
+    ('michael', NULL, 'Michael', 'Brooks', 315000.00, 41, '2026-01-15', '2026-10-21 10:30:00'),
+    ('emily', NULL, 'Emily', 'Patel', 135000.00, 25, '2026-01-08', NULL),
+    ('david', NULL, 'David', 'Kim', 275000.00, 36, '2026-02-01', '2026-10-22 14:45:00'),
+    ('olivia', NULL, 'Olivia', 'Rivera', 205000.00, 30, '2026-01-15', '2026-10-23 11:00:00'),
+    ('james', NULL, 'James', 'Wilson', 110000.00, 23, '2026-02-12', NULL),
+    ('ava', NULL, 'Ava', 'Thompson', 385000.00, 44, '2026-03-05', '2026-10-24 16:20:00'),
+    ('ethan', NULL, 'Ethan', 'Chen', 165000.00, 28, '2026-02-01', NULL),
+    ('sophia', NULL, 'Sophia', 'Brooks', 295000.00, 38, '2026-03-05', '2026-10-25 08:30:00');
+
+
+4. Backend Configuration & Compilation
+
+Verify or create the .env configuration file in C:\xampp\htdocs\IntroDB_Project1\Backend\.env:
+
 PORT=5050
 DB_USER=root
 PASSWORD=
 DATABASE=web_app
 DB_PORT=3306
 HOST=localhost
-```
-5. You need to rename dotenv to .env by command ```move dotenv .env```. 
-6.  Under the database ```web_app```, create an empty table as follows: 
-```SQL
-create table names (id INTEGER PRIMARY KEY AUTO_INCREMENT, name VARCHAR(100), date_added DATE);
-```
-7. Go the Backend directory ```C:\xampp\htdocs\database_javascript\project1\Backend```.
-8. npm install express mysql cors nodemon dotenv
-9. Start the Backend by running ```npm start```.
-10. Feel free to access some of the Backend endpoints directly such as [http://localhost:5050/getAll](http://localhost:5050/getAll). You will only receive JSON data without nice rendering. 
-11. Now you can interact with the Frontend [http://localhost/database_javascript/project1/Frontend/index.html](http://localhost/database_javascript/project1/Frontend/index.html).
 
-Finlay, if you need to learn more about nodejs and react: [Learn nodejs by examples](https://github.com/shiyonglu/database_javascript/tree/main/nodejs_examples). [Learn react by examples](https://github.com/shiyonglu/database_javascript/tree/main/react_examples). 
 
----------------------------------------
-Some tips: 
-1. In Mac, to see what process runs on port 5000, type ```lsof -i:5000```
-3. In Mac, to kill the process on port 5000, type ```kill -9 $(lsof -t -i:5000)```
-4. In Windows, to see what process runs on port 5000, type ```netstat -ano | findstr 5000```
-5. In Windows, to kill a process id = 40356, type ```taskkill /F /PID 40356```
-6. Mac uses port 5000 for AirPlay already, so you need to disable it if you want to use the same port, see [this blog](https://www.reddit.com/r/perl/comments/10p8p39/macos_port_5000_mystery_solved/)
-   
+Open PowerShell or Command Prompt, navigate to the Backend directory, and install dependencies:
 
+cd xampp\htdocs\IntroDB_Project1\Backend
+npm install
+
+
+5. Deployment & Execution
+
+Step 1: Start the Backend Server
+
+From the Backend directory, start the application:
+
+npm start
+
+
+Expected terminal output:
+
+HOST: localhost
+DB USER: root
+DATABASE: web_app
+DB PORT: 3306
+db connected
+I am listening on the fixed port 5050.
+
+
+Keep this terminal session running in the background.
+
+Step 2: Access the Frontend
+
+Navigate to:
+
+http://localhost/IntroDB_Project1/Frontend/index.html
+
+
+6. Testing Application Features
+
+Requirement 1 (User Registration): Fill out all fields in the registration form. When submitted, the user is created with registerday = CURDATE() and signintime = NULL.
+
+Requirement 2 (User Sign-In): Provide a registered userid and password. On success, the backend updates signintime to NOW().
+
+Requirement 3 (Search by Name): Filter users by first name, last name, or both.
+
+Requirement 4 (Search by ID): Look up an exact user profile by their unique userid.
+
+Requirement 5 (Salary Range): Retrieve users within specified minimum and maximum salary bounds.
+
+Requirement 6 (Age Range): Retrieve users within specified minimum and maximum integer age ranges.
+
+Requirement 7 (Registered After Specified Person): List users who registered after a target person's registration date.
+
+Requirement 8 (Never Signed In): List all users whose signintime is still NULL (displayed as 'Never').
+
+Requirement 9 (Registered on Same Day): List users who share the same registration date as a targeted person.
+
+Requirement 10 (Registered Today): Display all users who registered on the current calendar date (CURDATE()).
